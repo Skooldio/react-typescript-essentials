@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.50",
+  "scripts": {
+    "postinstall": "prisma db push",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@bogeychan/elysia-polyfills": "^0.6.1",
+    "@elysiajs/cors": "0.7.2",
+    "@elysiajs/lucia-auth": "0.7.0-exp.1",
+    "@elysiajs/static": "^0.7.1",
+    "@elysiajs/swagger": "^0.7.4",
+    "@lucia-auth/adapter-prisma": "^3.0.2",
+    "@prisma/client": "5.6.0",
+    "elysia": "0.7.25",
+    "prisma": "^5.6.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.10",
+    "tsx": "^4.1.2"
+  },
+  "module": "src/index.ts",
+  "types": "./src/index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
