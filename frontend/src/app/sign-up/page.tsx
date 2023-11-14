@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useUser } from '@/store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { api } from '@/libs'
 
 const signForm = z.object({
     username: z.string().min(5),
@@ -15,8 +17,6 @@ const signForm = z.object({
 type SignForm = z.infer<typeof signForm>
 
 export default function SignUp() {
-    const [user, setUser] = useUser()
-
     const {
         register,
         handleSubmit,
@@ -25,35 +25,35 @@ export default function SignUp() {
         resolver: zodResolver(signForm)
     })
 
-    const { mutate, data, isLoading, error } = useMutation<
-        string,
-        Error,
-        SignForm
-    >({
-        mutationFn: (value) =>
-            fetch('http://localhost:8080/auth/sign-in', {
-                method: 'POST',
-                mode: 'cors',
-                credentials: 'include',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(value)
-            }).then((x) => x.text())
+    const router = useRouter()
+
+    const { mutate, data: response, isLoading, error } = useMutation({
+        mutationFn: (value: SignForm) => api.auth['sign-up'].put(value)
     })
 
-    if (data) {
-        setUser(data)
-
-        return <h1>Loading</h1>
-    }
+    if (response?.data)
+        return (
+            <main className="flex flex-col gap-4 max-w-sm">
+                <h1 className="text-2xl font-medium">Sign up successfully</h1>
+                <p className="text-base text-gray-500">
+                    You have successfully sign up for the journal app, please go
+                    to the sign in to start your first journal
+                </p>
+                <Link
+                    className="text-center bg-blue-500 text-white rounded py-2 mt-4"
+                    href="/sign-in"
+                >
+                    Sign in
+                </Link>
+            </main>
+        )
 
     return (
         <form
-            className="flex flex-col max-w-sm mx-auto gap-4"
+            className="flex flex-col max-w-[16em] w-full mx-auto gap-4"
             onSubmit={handleSubmit((value) => mutate(value))}
         >
-            <h1>Sign In</h1>
+            <h1 className="text-2xl">Sign Up</h1>
             <input
                 {...register('username')}
                 type="text"
@@ -80,13 +80,21 @@ export default function SignUp() {
                 </p>
             )}
 
-            {error && <p className="text-red-500">{error.message}</p>}
+            {response?.error && <p className="text-red-500">{response.error.message}</p>}
             <button
                 className="bg-blue-500 text-white rounded py-2"
                 disabled={isLoading}
             >
-                Sign In
+                Sign Up
             </button>
+
+            <p className="text-sm text-gray-400">Already have an account?</p>
+            <Link
+                className="bg-blue-50 text-center text-blue-500 rounded py-2 px-4"
+                href="/sign-in"
+            >
+                Sign In
+            </Link>
         </form>
     )
 }

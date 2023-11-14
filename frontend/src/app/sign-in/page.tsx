@@ -5,6 +5,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useUser } from '@/store'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { api } from '@/libs'
 
 const signForm = z.object({
     username: z.string().min(5),
@@ -14,6 +18,9 @@ const signForm = z.object({
 type SignForm = z.infer<typeof signForm>
 
 export default function SignUp() {
+    const [user, setUser] = useUser()
+    const router = useRouter()
+
     const {
         register,
         handleSubmit,
@@ -22,28 +29,28 @@ export default function SignUp() {
         resolver: zodResolver(signForm)
     })
 
-    const { mutate, data, isLoading, error } = useMutation<
-        {
-            userId: string
-        },
-        Error,
-        SignForm
-    >({
-        mutationFn: (value) =>
-            fetch('http://localhost:8080/auth/sign-up', {
-                method: 'PUT',
-                body: JSON.stringify(value)
-            }).then((x) => x.text())
+    const {
+        mutate,
+        data: response,
+        isLoading,
+        error
+    } = useMutation({
+        mutationFn: (value: SignForm) => api.auth['sign-in'].post(value)
     })
 
-    if (data) return <h1>{data.userId}</h1>
+    if (response?.data) {
+        setUser(response.data)
+        router.replace('/')
+
+        return <h1>Loading</h1>
+    }
 
     return (
         <form
-            className="flex flex-col max-w-sm mx-auto gap-4"
+            className="flex flex-col max-w-[16em] w-full mx-auto gap-4"
             onSubmit={handleSubmit((value) => mutate(value))}
         >
-            <h1>Sign Up</h1>
+            <h1 className="text-2xl">Sign In</h1>
             <input
                 {...register('username')}
                 type="text"
@@ -70,13 +77,24 @@ export default function SignUp() {
                 </p>
             )}
 
-            {error && <p className="text-red-500">{error.message}</p>}
+            {response?.error && (
+                <p className="text-red-500">{response.error.message}</p>
+            )}
+
             <button
                 className="bg-blue-500 text-white rounded py-2"
                 disabled={isLoading}
             >
-                Sign Up
+                Sign In
             </button>
+
+            <p className="text-sm text-gray-400">Don&apos;t have an account?</p>
+            <Link
+                className="bg-blue-50 text-center text-blue-500 rounded py-2 px-4"
+                href="/sign-up"
+            >
+                Sign Up
+            </Link>
         </form>
     )
 }

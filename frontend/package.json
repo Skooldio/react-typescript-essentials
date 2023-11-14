@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@elysiajs/eden": "^0.5.6",
     "@hookform/resolvers": "^3.1.1",
     "@tanstack/react-query": "^4.29.19",
     "@types/node": "20.4.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "autoprefixer": "10.4.14",
+    "elysia": "^0.5.25",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
     "jotai": "^2.2.2",
@@ -23,6 +25,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.1",
+    "server": "../backend",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.6",
     "zod": "^3.21.4"

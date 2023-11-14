@@ -1,12 +1,11 @@
+'use client'
+import { api } from '@/libs'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 export default function SignOut() {
     const { mutate, data, isLoading, isError } = useMutation({
-        mutationFn: () =>
-            fetch('http://localhost:8080/auth/sign-out', {
-                credentials: 'include'
-            }).then((x) => x.text())
+        mutationFn: () => api.auth['sign-out'].get()
     })
 
     useEffect(() => {
@@ -16,7 +15,7 @@ export default function SignOut() {
     return (
         <button
             onClick={() => mutate()}
-            className="bg-red-100 text-red-500 rounded px-4 py-1"
+            className="hover:bg-red-100 focus:bg-red-100 text-sm text-red-400 rounded px-4 py-2 transition-colors"
             disabled={isLoading}
         >
             Sign out
